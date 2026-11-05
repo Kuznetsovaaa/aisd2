@@ -3,6 +3,7 @@ module;
 #include <cstddef>
 #include <stdexcept>
 #include <iostream>
+#include <random>
 
 export module linked_list;
 
@@ -25,6 +26,16 @@ class LinkedList {
     while (current != nullptr) {
       push_tail(current->data);
       current = current->next;
+    }
+  }
+
+  // Конструктор со случайными значениями (size - кол-во элементов, min/max - диапазон)
+  LinkedList(std::size_t size, int min_val, int max_val) : head_(nullptr), tail_(nullptr), size_(0) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dist(min_val, max_val);
+    for (std::size_t i = 0; i < size; ++i) {
+      push_tail(dist(gen));
     }
   }
 
@@ -68,6 +79,15 @@ class LinkedList {
     ++size_;
   }
 
+  // Перегрузка: добавление другого списка в конец
+  void push_tail(const LinkedList& other) {
+    Node<T>* current = other.head_;
+    while (current != nullptr) {
+      push_tail(current->data);
+      current = current->next;
+    }
+  }
+
   void push_head(const T& value) {
     Node<T>* new_node = new Node<T>(value);
     new_node->next = head_;
@@ -78,6 +98,15 @@ class LinkedList {
     }
     head_ = new_node;
     ++size_;
+  }
+
+  // Перегрузка: добавление другого списка в начало
+  void push_head(const LinkedList& other) {
+    Node<T>* current = other.tail_;
+    while (current != nullptr) {
+      push_head(current->data);
+      current = current->prev;
+    }
   }
 
   void pop_heads() {
@@ -123,13 +152,35 @@ class LinkedList {
     }
   }
 
+  // Чтение по индексу (возвращает копию)
+  T operator[](std::size_t index) const {
+    if (index >= size_) {
+      throw std::out_of_range("Index out of range");
+    }
+    Node<T>* current = head_;
+    for (std::size_t i = 0; i < index; ++i) {
+      current = current->next;
+    }
+    return current->data;
+  }
+
+  // Запись по индексу (возвращает ссылку)
+  T& operator[](std::size_t index) {
+    if (index >= size_) {
+      throw std::out_of_range("Index out of range");
+    }
+    Node<T>* current = head_;
+    for (std::size_t i = 0; i < index; ++i) {
+      current = current->next;
+    }
+    return current->data;
+  }
+
   std::size_t get_size() const {
     return size_;
   }
 
  private:
-  struct NodeWrapper {}; // Заглушка (не обращай внимания, просто для красоты не нужна, я убрал)
-  
   void unlink_node(Node<T>* node) {
     if (node->prev != nullptr) {
       node->prev->next = node->next;
@@ -147,3 +198,16 @@ class LinkedList {
   Node<T>* tail_;
   std::size_t size_;
 };
+
+// Перегрузка вывода в консоль
+export template <typename T>
+std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
+  std::size_t count = list.get_size();
+  for (std::size_t i = 0; i < count; ++i) {
+    os << list[i];
+    if (i + 1 < count) {
+      os << " ";
+    }
+  }
+  return os;
+}
