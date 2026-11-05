@@ -14,6 +14,7 @@ struct Node {
 
     explicit Node(const T& value) : data(value), prev(nullptr), next(nullptr) {}
 };
+
 export template <typename T>
 class LinkedList {
  public:
@@ -53,6 +54,30 @@ class LinkedList {
     head_ = nullptr;
     tail_ = nullptr;
     size_ = 0;
+  }
+
+  void push_tail(const T& value) {
+    Node<T>* new_node = new Node<T>(value);
+    new_node->prev = tail_;
+    if (tail_ != nullptr) {
+      tail_->next = new_node;
+    } else {
+      head_ = new_node;
+    }
+    tail_ = new_node;
+    ++size_;
+  }
+
+  void push_head(const T& value) {
+    Node<T>* new_node = new Node<T>(value);
+    new_node->next = head_;
+    if (head_ != nullptr) {
+      head_->prev = new_node;
+    } else {
+      tail_ = new_node;
+    }
+    head_ = new_node;
+    ++size_;
   }
 
  private:
