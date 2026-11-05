@@ -29,7 +29,6 @@ class LinkedList {
     }
   }
 
-  // Конструктор со случайными значениями (size - кол-во элементов, min/max - диапазон)
   LinkedList(std::size_t size, int min_val, int max_val) : head_(nullptr), tail_(nullptr), size_(0) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -79,7 +78,6 @@ class LinkedList {
     ++size_;
   }
 
-  // Перегрузка: добавление другого списка в конец
   void push_tail(const LinkedList& other) {
     Node<T>* current = other.head_;
     while (current != nullptr) {
@@ -100,7 +98,6 @@ class LinkedList {
     ++size_;
   }
 
-  // Перегрузка: добавление другого списка в начало
   void push_head(const LinkedList& other) {
     Node<T>* current = other.tail_;
     while (current != nullptr) {
@@ -152,7 +149,6 @@ class LinkedList {
     }
   }
 
-  // Чтение по индексу (возвращает копию)
   T operator[](std::size_t index) const {
     if (index >= size_) {
       throw std::out_of_range("Index out of range");
@@ -164,7 +160,6 @@ class LinkedList {
     return current->data;
   }
 
-  // Запись по индексу (возвращает ссылку)
   T& operator[](std::size_t index) {
     if (index >= size_) {
       throw std::out_of_range("Index out of range");
@@ -174,6 +169,10 @@ class LinkedList {
       current = current->next;
     }
     return current->data;
+  }
+
+  Node<T>* get_head() const {
+    return head_;
   }
 
   std::size_t get_size() const {
@@ -199,7 +198,6 @@ class LinkedList {
   std::size_t size_;
 };
 
-// Перегрузка вывода в консоль
 export template <typename T>
 std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
   std::size_t count = list.get_size();
